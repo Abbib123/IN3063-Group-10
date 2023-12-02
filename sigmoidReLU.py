@@ -17,4 +17,14 @@ class SigmoidLayer:
         sigmoid_x = 1 / (1 + np.exp(-x))
         return dA * sigmoid_x * (1 - sigmoid_x)
 
+# ReLU Activation Layer
+class ReLULayer:
+    def forward(self, x):
+        self.cache = x
+        return np.maximum(0, x)
+
+    def backward(self, dA):
+        x = self.cache
+        return dA * (x > 0)
+
 
