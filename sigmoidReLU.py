@@ -35,3 +35,24 @@ class TwoLayerNN:
         self.b2 = np.zeros((1, output_size))
         self.sigmoid = SigmoidLayer()
         self.relu = ReLULayer()
+
+    def forward(self, x):
+        self.z1 = np.dot(x, self.W1) + self.b1
+        self.a1 = self.relu.forward(self.z1)
+        self.z2 = np.dot(self.a1, self.W2) + self.b2
+        self.a2 = self.sigmoid.forward(self.z2)
+        return self.a2
+
+    def backward(self, x, y, learning_rate):
+        m = x.shape[0]
+        dZ2 = self.a2 - y
+        dW2 = np.dot(self.a1.T, dZ2) / m
+        db2 = np.sum(dZ2, axis=0, keepdims=True)
+        dZ1 = np.dot(dZ2, self.W2.T) * self.relu.backward(self.z1)
+        dW1 = np.dot(x.T, dZ1) / m
+        db1 = np.sum(dZ1, axis=0, keepdims=True)
+
+        self.W2 -= learning_rate * dW2
+        self.b2 -= learning_rate * db2
+        self.W1 -= learning_rate * dW1
+        self.b1 -= learning_rate * db1
