@@ -27,4 +27,11 @@ class ReLULayer:
         x = self.cache
         return dA * (x > 0)
 
-
+class TwoLayerNN:
+    def __init__(self, input_size, hidden_size, output_size):
+        self.W1 = np.random.randn(input_size, hidden_size)
+        self.b1 = np.zeros((1, hidden_size))
+        self.W2 = np.random.randn(hidden_size, output_size)
+        self.b2 = np.zeros((1, output_size))
+        self.sigmoid = SigmoidLayer()
+        self.relu = ReLULayer()
