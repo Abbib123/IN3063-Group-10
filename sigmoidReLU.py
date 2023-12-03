@@ -70,3 +70,19 @@ class TwoLayerNN:
 
             if epoch % 100 == 0:
                 print(f"Epoch {epoch}, Loss: {loss:.4f}")
+    
+# Example data for binary classification (2 features)
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([[0], [1], [1], [0]])
+
+# Create and train the neural network
+input_size = X.shape[1]
+hidden_size = 4
+output_size = 1
+nn = TwoLayerNN(input_size, hidden_size, output_size)
+nn.train(X, y, learning_rate=0.1, epochs=1000)
+
+# Make predictions
+predictions = nn.forward(X)
+print("Predictions:")
+print(predictions)
