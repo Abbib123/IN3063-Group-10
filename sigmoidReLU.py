@@ -56,3 +56,17 @@ class TwoLayerNN:
         self.b2 -= learning_rate * db2
         self.W1 -= learning_rate * dW1
         self.b1 -= learning_rate * db1
+        
+    def train(self, x, y, learning_rate, epochs):
+        for epoch in range(epochs):
+            # Forward propagation
+            predictions = self.forward(x)
+            
+            # Compute loss (e.g., cross-entropy)
+            loss = -np.mean(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
+
+            # Backpropagation
+            self.backward(x, y, learning_rate)
+
+            if epoch % 100 == 0:
+                print(f"Epoch {epoch}, Loss: {loss:.4f}")
