@@ -86,3 +86,19 @@ nn.train(X, y, learning_rate=0.1, epochs=1000)
 predictions = nn.forward(X)
 print("Predictions:")
 print(predictions)
+
+class SoftmaxLayer:
+    def forward(self, x):
+        # Numerically stable softmax
+        exp_x = np.exp(x - np.max(x, axis=1, keepdims=True))
+        softmax_output = exp_x / np.sum(exp_x, axis=1, keepdims=True)
+        self.cache = softmax_output
+        return softmax_output
+
+    def backward(self, dA, y):
+        # dA is the gradient of the loss with respect to the softmax output
+        softmax_output = self.cache
+        m = dA.shape[0]
+        dz = softmax_output - y
+        dz /= m  # Normalize by the number of samples
+        return dz
