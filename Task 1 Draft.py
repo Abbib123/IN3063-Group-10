@@ -8,7 +8,11 @@ Created on Wed Nov 29 14:00:21 2023
 # IN3063 Mathematics and Programming for AI
 # Coursework
 
+from keras.datasets import mnist
+
 import numpy as np
+
+(train_X, train_y), (test_X, test_y) = mnist.load_data()
 
 # 1a. Implement sigmoid and ReLU layers
 # sigmoid
@@ -22,6 +26,16 @@ def d_sigmoid(x):
     s = sigmoid(x)
     ds = s * ( 1 - s )
     return ds
+
+# forward pass of sigmoid
+def forward_sigmoid(self, x):
+    self.cache = x
+    return sigmoid(x)
+
+# backward pass of sigmoid
+def backward_sigmoid(self, dA):
+    x = self.cache
+    return dA * d_sigmoid(x)
 
 # relu
 def relu(x):
@@ -38,7 +52,17 @@ def d_relu(x):
         dr = 0
         '''
     return dr
-    
+
+# forward pass of relu
+def forward_relu(self, x):
+    self.cache = x
+    return relu(x)
+
+# backward pass of sigmoid
+def backward_relu(self, dA):
+    x = self.cache
+    return dA * d_relu(x)
+
 # 1b. Implement softmax layer
 # softmax
 def softmax(x):
