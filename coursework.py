@@ -20,13 +20,13 @@ class SigmoidLayer:
         return x * (1.0 - x)
     
     # Implement forward and backward pass for Sigmoid
-    def forward_pass_sigmoid(x, weights, biases):
+    def forward_pass_sigmoid(self, x, weights, biases):
         activation_input = np.dot(x, weights) + biases
-        activation_output = sigmoid(activation_input)
+        activation_output = self.sigmoid(activation_input)
         return activation_output
 
-    def backward_pass_sigmoid(y):
-        activation_output = sigmoid_derivative(activation_input)
+    def backward_pass_sigmoid(self, y):
+        activation_output = self.sigmoid_derivative()
         
         # Update weights and biases
 
@@ -39,28 +39,29 @@ class ReLULayer:
         return (x >= 0) * 1
     
     # Implement forward and backward pass for ReLU
-    def forward_pass_relu(x, weights, biases):
+    def forward_pass_relu(self, x, weights, biases):
         activation_input = np.dot(x, weights) + biases
-        activation_output = relu(activation_input)
+        activation_output = self.relu(activation_input)
         return activation_output
     
-    def backward_pass_relu(y):
-        activation_output = relu_derivative(activation_input)
+    def backward_pass_relu(self, y):
+        activation_output = self.relu_derivative()
         
         # Update weights and biases
             
 # Implement softmax layer
 class SoftmaxLayer:
-    def forward_pass_softmax():
+    def softmax(x):
+        e = np.exp(x)
+        return e / e.sum()
+    
+    def forward_pass_softmax(self, x):
+        activation_output = self.softmax(x)
+        return activation_output
+        
+    def backward_pass_softmax(self, x):
         ...
-    def backward_pass_softmax():
-        ...
-# Implement dropout 
-class Dropout:
-    def forward_pass_dropout():
-        ...
-    def backward_pass_dropout():
-        ...
+
 # Implement a fully parametrizable neural network class
 class NeuralNetwork:
     
@@ -72,5 +73,8 @@ class NeuralNetwork:
         # Initialise biases
         b1 = np.zeros()
         b2 = np.zeros()
+        
+    def train(self):
+        ...
     
 # Implement optimizer
