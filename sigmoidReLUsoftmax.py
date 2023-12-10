@@ -15,6 +15,16 @@ def relu(x):
 def relu_derivative(x):
     return np.where(x > 0, 1, 0)
 
+def softmax(Z):
+    # Numerical stability fix: shift values inside the exp function
+    e_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
+    return e_Z / np.sum(e_Z, axis=0, keepdims=True)
+
+def softmax_backward(Y, softmax_output):
+    # Y is one-hot encoded true labels, softmax_output is the output of the softmax function
+    dZ = softmax_output - Y
+    return dZ
+
 # Initialize network parameters
 def initialize_parameters(input_size, hidden_size, output_size):
     W1 = np.random.randn(hidden_size, input_size) * 0.01
@@ -35,7 +45,7 @@ def forward_pass(X, parameters):
     Z1 = np.dot(W1, X) + b1
     A1 = relu(Z1)  # or sigmoid(Z1), depending on your choice
     Z2 = np.dot(W2, A1) + b2
-    A2 = sigmoid(Z2)
+    A2 = softmax(Z2)
 
     cache = {"Z1": Z1, "A1": A1, "Z2": Z2, "A2": A2}
     return A2, cache
@@ -49,7 +59,7 @@ def backward_pass(X, Y, cache, parameters):
     A1 = cache["A1"]
     A2 = cache["A2"]
 
-    dZ2 = A2 - Y
+    dZ2 = softmax_backward(y_train_one_hot, cache["A2"])
     dW2 = np.dot(dZ2, A1.T) / m
     db2 = np.sum(dZ2, axis=1, keepdims=True) / m
     dZ1 = np.dot(W2.T, dZ2) * relu_derivative(cache["Z1"])  # or sigmoid_derivative for sigmoid
@@ -68,7 +78,7 @@ def update_parameters(parameters, grads, learning_rate):
     
 def compute_cost(A2, Y):
     m = Y.shape[1]
-    cost = -np.sum(Y * np.log(A2) + (1 - Y) * (np.log(1 - A2))) / m
+    cost = -np.sum(Y * np.log(A2 + 1e-15)) / m
     cost = np.squeeze(cost)  # ensures the cost is the dimension we expect.
     return cost
 
