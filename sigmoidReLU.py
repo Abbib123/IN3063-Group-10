@@ -54,9 +54,9 @@ class SoftmaxLayer:
 
 class TwoLayerNN:
     def __init__(self, input_size, hidden_size, output_size):
-        self.W1 = np.random.randn(input_size, hidden_size)
+        self.W1 = np.random.randn(input_size, hidden_size) * np.sqrt(2 / input_size)
         self.b1 = np.zeros((1, hidden_size))
-        self.W2 = np.random.randn(hidden_size, output_size)
+        self.W2 = np.random.randn(hidden_size, output_size) * np.sqrt(2 / hidden_size)
         self.b2 = np.zeros((1, output_size))
         self.sigmoid = SigmoidLayer()
         self.relu = ReLULayer()
@@ -113,7 +113,7 @@ input_size = 784
 hidden_size = 128
 output_size = 10  # Set to the number of classes in your problem
 nn = TwoLayerNN(input_size, hidden_size, output_size)
-nn.train(X_train, y_train, learning_rate=0.1, epochs=1000)
+nn.train(X_train, y_train, learning_rate=0.001, epochs=1000)
 
 # Predictions on test set
 test_predictions = nn.forward(X_test)
