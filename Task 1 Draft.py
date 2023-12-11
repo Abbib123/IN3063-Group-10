@@ -14,6 +14,8 @@ import numpy as np
 
 (train_X, train_y), (test_X, test_y) = mnist.load_data()
 
+print(len(train_y))
+
 # 1a. Implement sigmoid and ReLU layers
 # sigmoid
 def sigmoid(x):
@@ -21,58 +23,75 @@ def sigmoid(x):
     s = 1 / ( 1 + e )
     return s
 
-# derivative of sigmoid
+# sigmoid derivative
 def d_sigmoid(x):
     s = sigmoid(x)
     ds = s * ( 1 - s )
     return ds
 
-# forward pass of sigmoid
-def forward_sigmoid(self, x):
-    self.cache = x
-    return sigmoid(x)
+# sigmoid forward
+def forward_sigmoid(inputs):
+    outputs = sigmoid(inputs)
+    return outputs
 
-# backward pass of sigmoid
-def backward_sigmoid(self, dA):
-    x = self.cache
-    return dA * d_sigmoid(x)
+# sigmoid backward
+def backward_sigmoid(output, d_cost_output):
+    d_output_input = d_sigmoid(output)
+    d_cost_input = d_cost_output * d_output_input
+    return d_cost_input
 
 # relu
 def relu(x):
-    r = max(0, x)
+    r = np.maximum(0, x)
     return r
 
-# derivative of relu
+# relu derivative
 def d_relu(x):
-    dr = np.where(x <= 0, 0, 1)
-    '''
-    if x >= 0:
-        dr = 1
-    else:
-        dr = 0
-        '''
+    dr = np.where(x > 0, 0, 1)
     return dr
 
-# forward pass of relu
-def forward_relu(self, x):
-    self.cache = x
-    return relu(x)
+# relu forward
+def forward_relu(inputs):
+    output = relu(inputs)
+    return output
 
-# backward pass of sigmoid
-def backward_relu(self, dA):
-    x = self.cache
-    return dA * d_relu(x)
+# sigmoid backward
+def backward_relu(output, d_cost_output):
+    d_output_input = d_relu(output)
+    d_cost_input = d_cost_output * d_output_input
+    return d_cost_input
 
 # 1b. Implement softmax layer
 # softmax
-def softmax(x):
-    e = np.exp(x)
+def softmax(v):
+    e = np.exp(v)
     sum_e = np.sum(e)
     s = e / sum_e
     return s
+
+# softmax derivative
+def d_softmax(v):
+    s = softmax(v)
+    ds = s * (1 - s)
+    return ds
+
+# softmax forward
+def forward_softmax(inputs):
+    output = softmax(inputs)
+    return output
+
+# softmax backward
+def backward_softmax(output, d_cost_output):
+    d_output_input = d_softmax(output)
+    d_cost_input = d_cost_output * d_output_input
+    return d_cost_input
+
+# softmax cross entropy loss
 '''
-# derivative of softmax
-def d_softmax(x):
+def cross_entropy_loss_softmax(x):
+    num_samples = y_pred.shape[0]
+    loss = -np.sum(np.log(y_pred[np.arange(num_samples), y_true])) / num_samples
+    return loss
 '''
 # 1c. Implement dropout
 # inverted dropout
