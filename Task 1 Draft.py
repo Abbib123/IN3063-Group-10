@@ -95,3 +95,37 @@ def cross_entropy_loss_softmax(x):
 '''
 # 1c. Implement dropout
 # inverted dropout
+'''
+refrerence to online
+class InvertedDropout:
+    def __init__(self, dropout_prob):
+        self.dropout_prob = dropout_prob
+        self.mask = None
+
+    def forward(self, x, is_training=True):
+        if is_training:
+            self.mask = (np.random.rand(*x.shape) < (1 - self.dropout_prob)) / (1 - self.dropout_prob)
+            out = x * self.mask
+        else:
+            out = x
+        return out
+
+    def backward(self, dout):
+        dx = dout * self.mask
+        return dx
+    '''
+# 1d. Implement a fully parametrizable neural network class
+class NeuralNetwork:
+    def __init__(self, input_size, hidden_size, output_size, learning_rate, decay):
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        self.learning_rate = learning_rate
+        self.decay = decay
+
+        # Initialize weights and biases
+        self.weights_input_hidden = np.random.randn(input_size, hidden_size)
+        self.bias_hidden = np.zeros((1, hidden_size))
+        self.weights_hidden_output = np.random.randn(hidden_size, output_size)
+        self.bias_output = np.zeros((1, output_size))
+        
