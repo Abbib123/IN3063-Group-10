@@ -71,11 +71,37 @@ class SoftmaxLayer:
         return activation_output
         
 # Implement dropout
+class Dropout:
+    def forward_pass_dropout(input_nodes, hidden_nodes, output_nodes, active_input_percentage, active_hidden_percentage):
+        # weight matrix between input layer and hidden layer
+        wih = np.random.randint(0 - input_nodes, input_nodes, (hidden_nodes, input_nodes))
+        
+        # weight matrix between hidden layer and output layer
+        who = np.random.randint(0 - input_nodes, input_nodes, (output_nodes, hidden_nodes))
+        
+        active_input_nodes = input_nodes * active_input_percentage
+        active_hidden_nodes = hidden_nodes * active_hidden_percentage
+        
+        active_input_indices = sorted(random.sample(range(0, input_nodes), active_input_nodes))
+        active_hidden_indices = sorted(random.sample(range(0, hidden_nodes), active_hidden_nodes))
+        
+        updated_wih = wih.copy()
+        updated_wih = updated_wih[: , active_input_indices]
+        
+        wih = wih[active_hidden_indices]
+        
+        updated_who = who.copy()
+        updated_who = updated_who[:, active_hidden_indices]
+        
+        return updated_who
+        
+    def backward_pass_dropout(self):
+        ...
 
 # Implement a fully parametrizable neural network class
 class NeuralNetwork:
     
-    def __init__(self, input_size, hidden_size, output_size, layer_size, activation_functions):
+    def __init__(self, input_size, hidden_size, output_size, hidden_layers, activation_functions, learning_rate):
         # Initialise random weight matrices
         self.w1 = np.random.rand(input_size, hidden_size)
         self.w2 = np.random.rand(hidden_size, output_size)
@@ -84,8 +110,23 @@ class NeuralNetwork:
         self.b1 = np.zeros((1, output_size))
         self.b2 = np.zeros((1, output_size))
         
-        self.layers = layer_size
-        self.activation_functions_list = [activation_functions]
+        self.hidden_layers = hidden_layers # number of hidden layers
+        self.activation_functions = activation_functions # list
+        self.learning_rate = learning_rate
         
-    def train(self):
+    def forward_pass(self):
         ...
+        
+    def backward_pass(self):
+        # update weights and biases
+        ...
+
+    def train(self):
+        for i in range(1, self.hidden_layers):
+            for function in self.activation_functions:
+                if function == "sigmoid":
+                    ...
+                elif function == "relu":
+                    ...
+                elif function == "softmax":
+                    ...
