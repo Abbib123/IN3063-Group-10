@@ -169,7 +169,7 @@ y_test_one_hot = np.eye(num_classes)[y_test].T
 nn = NeuralNetwork(layers=[784, 128, 10], 
                    activation_funcs=["relu", "softmax"], 
                    learning_rate=0.1, 
-                   dropout_keep_prob=0.8)
+                   dropout_keep_prob=0.5)
 
 nn.train(X_train, y_train_one_hot, epochs=1000)
 
