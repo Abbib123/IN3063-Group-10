@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Dec 18 19:47:56 2023
+Created on Thu Dec 28 18:25:45 2023
 
 @author: Tameem Al Azam
 """
@@ -39,6 +39,7 @@ class NeuralNetwork:
         self.reg_lambda = reg_lambda
         self.dropout_keep_prob = dropout_keep_prob
         self.parameters = self.initialize_parameters()
+        self.velocities = self.initialize_velocities()
 
     def initialize_parameters(self):
         parameters = {}
@@ -46,6 +47,13 @@ class NeuralNetwork:
             parameters['W' + str(l)] = np.random.randn(self.layers[l], self.layers[l-1]) * 0.01
             parameters['b' + str(l)] = np.zeros((self.layers[l], 1))
         return parameters
+
+    def initialize_velocities(self):
+        velocities = {}
+        for l in range(1, len(self.layers)):
+            velocities['dW' + str(l)] = np.zeros_like(self.parameters['W' + str(l)])
+            velocities['db' + str(l)] = np.zeros_like(self.parameters['b' + str(l)])
+        return velocities
 
     def forward_pass(self, X, training=True):
         cache = {'A0': X}  # Storing input layer activation
@@ -112,6 +120,21 @@ class NeuralNetwork:
             self.parameters["W" + str(l+1)] -= self.learning_rate * grads["dW" + str(l+1)]
             self.parameters["b" + str(l+1)] -= self.learning_rate * grads["db" + str(l+1)]
 
+    def update_parameters_sgd(self, grads):
+        L = len(self.parameters) // 2
+        for l in range(L):
+            self.parameters['W' + str(l+1)] -= self.learning_rate * grads['dW' + str(l+1)]
+            self.parameters['b' + str(l+1)] -= self.learning_rate * grads['db' + str(l+1)]
+
+    def update_parameters_with_momentum(self, grads, beta=0.9):
+        L = len(self.parameters) // 2
+        for l in range(L):
+            self.velocities['dW' + str(l+1)] = beta * self.velocities['dW' + str(l+1)] + (1 - beta) * grads['dW' + str(l+1)]
+            self.velocities['db' + str(l+1)] = beta * self.velocities['db' + str(l+1)] + (1 - beta) * grads['db' + str(l+1)]
+        
+            self.parameters['W' + str(l+1)] -= self.learning_rate * self.velocities['dW' + str(l+1)]
+            self.parameters['b' + str(l+1)] -= self.learning_rate * self.velocities['db' + str(l+1)]
+
     def compute_cost(self, Y, Y_hat):
         m = Y.shape[1]
         L = len(self.parameters) // 2
@@ -119,7 +142,7 @@ class NeuralNetwork:
         cost = (-np.sum(Y * np.log(Y_hat + 1e-15)) / m) + (self.reg_lambda / (2 * m)) * regularized_sum
         return np.squeeze(cost)
 
-    def train(self, X_train, Y_train, epochs):
+    def train(self, X_train, Y_train, epochs, optimizer="momentum"):
         for i in range(epochs):
             # Forward pass
             Y_hat, cache = self.forward_pass(X_train)
@@ -131,14 +154,18 @@ class NeuralNetwork:
             grads = self.backward_pass(X_train, Y_train, cache)
 
             # Update parameters
-            self.update_parameters(grads)
+            if optimizer == "sgd":
+                self.update_parameters_sgd(grads)
+            elif optimizer == "momentum":
+                self.update_parameters_with_momentum(grads)
+
 
             if i % 100 == 0:
                 print(f"Iteration {i}: Cost {cost}")
 
     def predict(self, X):
         Y_hat, _ = self.forward_pass(X, training=False)
-        print(f"Shape of Y_hat before argmax: {Y_hat.shape}")  # Debugging line
+        #print(f"Shape of Y_hat before argmax: {Y_hat.shape}")  # Debugging line
         predictions = np.argmax(Y_hat, axis=0)
         return predictions  # Ensure this is an array of predicted labels
 
@@ -148,7 +175,7 @@ class NeuralNetwork:
         labels = np.argmax(Y_test, axis=0)
         
         # Debugging: Check if predictions and labels are arrays
-        print(f"Shape of predictions: {predictions.shape}, Shape of labels: {labels.shape}")
+        #print(f"Shape of predictions: {predictions.shape}, Shape of labels: {labels.shape}")
         
         accuracy = np.mean(predictions == labels)
         return accuracy
@@ -171,7 +198,14 @@ nn = NeuralNetwork(layers=[784, 128, 10],
                    learning_rate=0.1, 
                    dropout_keep_prob=0.5)
 
-nn.train(X_train, y_train_one_hot, epochs=2000)
+#nn.train(X_train, y_train_one_hot, epochs=1000)
+
+# Train using standard SGD
+#nn.train(X_train, y_train_one_hot, epochs=1000, optimizer="sgd")
+
+# Train using SGD with momentum
+nn.train(X_train, y_train_one_hot, epochs=1000, optimizer="momentum")
+
 
 # Evaluate the network on the test set
 test_accuracy = nn.evaluate(X_test, y_test_one_hot)
