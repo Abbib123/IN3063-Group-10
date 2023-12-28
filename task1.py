@@ -7,6 +7,8 @@ from tensorflow import keras
 import numpy as np
 import random
 
+# Task 1
+
 # Load MNIST dataset and split into training and testing sets
 (X_train, y_train), (X_test, y_test) = keras.datasets.mnist.load_data(path="mnist.npz")
 X_train = np.array(X_train)
@@ -130,3 +132,4 @@ class NeuralNetwork:
                     ...
                 elif function == "softmax":
                     ...
+                    
