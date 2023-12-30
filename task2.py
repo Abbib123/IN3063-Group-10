@@ -11,16 +11,23 @@ from sklearn.model_selection import train_test_split
 
 # Task 2
 
-# TODO: save dataset into GitHub using GitHub LFS as it is too big
-
 data = pd.read_csv("brewery_data_complete_extended.csv").dropna()
 print(data)
 
-X = ...
-y = ...
+# X
+fermentation_time = data["Fermentation_Time"]
+temperature = data["Temperature"]
+bitterness = data["Bitterness"]
+color = data["Color"]
+brewhouse_efficiency = data["Brewhouse_Efficiency"]
+
+# y
+quality_score = data["Quality_Score"]
+
+columns = {'Fermentation_Time', 'Temperature', 'Bitterness', 'Color', 'Brewhouse_Efficiency'}
 
 # Split data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(data[columns], quality_score, test_size=0.2)
 
 # Convert data to numpy and then PyTorch tensors
 X_train = torch.from_numpy(X_train)
@@ -45,22 +52,28 @@ class NeuralNetwork(nn.Module):
         x = self.sigmoid(x)
         return x
     
-input_size = X.shape
+input_size = ...
 hidden_size = ...
 output_size = ...
 
 num_of_epochs = 1000
 learning_rate = 0.01
 L1_lambda = 0.01
+batch_size = ...
 
 model = NeuralNetwork(input_size, hidden_size, output_size)
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
+# Train model
 for epoch in range(num_of_epochs):
     model.train()
     train_loss= 0.0
     
-    for i in range(0, X_train.shape[0]):        
+    for i in range(0, X_train.shape[0], batch_size):     
+        
+        input_data = X_train[i:min(X_train.shape[0], i + batch_size)]
+        target = y_train[i:min(X_train.shape[0], i + batch_size)]
+        
         # forward pass
         output = model(input_data)
     
@@ -83,3 +96,6 @@ for epoch in range(num_of_epochs):
         # update weights
         optimizer.step()
         train_loss += loss.item() * input_data.size(0)
+        
+# Evaluate model
+model.eval()
