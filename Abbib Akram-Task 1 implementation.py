@@ -47,5 +47,49 @@ def initialise_weights(inputnodes,hiddennodes,outputnodes):
         }
     
     return weights
+
+
+    #Reference to:https://www.youtube.com/watch?v=vtx1iwmOx10
+def forward_prop_NN(inputnodes,weights):
+       
+       h1 = weights['h1']
+       c1 = weights['c1']
+       h2 = weights['h2']
+       c2 = weights['c2']
+       
+       #Matrix multiplication
+       k1=np.dot(h1,inputnodes) + c1
+       v1 = reLu(k1)  #Implementing relu later
+       
+       k2=np.dot(h2,v1)+ c2
+       v2=softMax(c2) #Implementing sigmoid later
+       
+       forward_storage = {
+           "k1" : k1,
+           "v1" : v2,
+           "k2" : k2,
+           "v2" : v2
+           
+           }  
+       return forward_storage
+       
+       
+def cost_function (v2, outputnodes):     
     
-        
+    m = y.shape[1]
+    
+    cost = -(1/m)*np.sum(outputnodes*np.log(a2))
+    
+    return cost
+
+def backward_prop_NN(inputnodes,outputnodes,weights,forward_storage):
+    
+    
+    
+       
+       
+       
+       
+       
+       
+       
