@@ -76,15 +76,45 @@ def forward_prop_NN(inputnodes,weights):
        
 def cost_function (v2, outputnodes):     
     
-    m = y.shape[1]
+    m = outputnodes.shape[1]
     
-    cost = -(1/m)*np.sum(outputnodes*np.log(a2))
+    cost = -(1/m)*np.sum(outputnodes*np.log(v2))
     
     return cost
 
 def backward_prop_NN(inputnodes,outputnodes,weights,forward_storage):
     
+    h1 = weights ['h1']
+    c1 = weights['c1']
+    h2 = weights['h2']
+    c2 = weights['c2']
     
+    k1 = forward_storage['k1']
+    k2 = forward_storage['k2']
+    
+    m = inputnodes.shape[1]
+    
+    #Activation functions for backpropagation
+    
+    ak2 = (v2 - outputnodes)
+    ac2 = (1/m)*np.dot(ah2.T)
+    ah2 = (1/m)*np.sum(ah2,axis= 1,keepdims= 1)
+    
+   
+    
+    ah1 = (1/m)*np.dot(w2.T, ah2)*derivative_tanh(k1) #Implementing tanh later
+    ac1 = (1/m)*np.dot(ah1, x.T)
+    ah1 = (1/m)*np.sum(dz1, axis = 1, keepdims = True) 
+    
+    
+    gradients = {
+        }
+    
+    
+    
+    
+    
+                  
     
        
        
