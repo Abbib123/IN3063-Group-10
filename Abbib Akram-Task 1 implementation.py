@@ -111,13 +111,12 @@ def backpropagation_nn(inputnodes,outputnodes,architecture,forwardprop_value_sto
     h = inputnodes.shape[1]
     
     form_com2 = (form_bias_2 - outputnodes)
-    form_weight_2 = (1/h)*np.dot(form_com2,form_bias_1)
+    form_weight_2 = (1/h)*np.dot(form_com2,form_bias_1.T)
     form_bias_2 = (1/h)*np.sum(form_com2,axis=1,keepdims=True)
     
-    form_com1 = (1/h)*np.dot(initialise_architecture.weight_2.T,form_com2)*derivative_tanh
-    
-    
-    form_weight_1 = (1/h)*np.dot(initialise_architecture.weight_2.form_com2)*derivative_tanh
+    form_com1 = (1/h)*np.dot(initialise_architecture.weight_2.T,form_com2)*derivative_tanh(form_bias_1)
+    form_weight_1 = (1/h)*np.dot(form_com1,inputnodes.T)
+    form_bias_1 = (1/h)*np.sum()
                  
     
     
