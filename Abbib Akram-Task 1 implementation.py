@@ -130,6 +130,32 @@ def backpropagation_nn(inputnodes,outputnodes,architecture,forwardprop_value_sto
 
 def update_architecture(architecture,gradients,rate_of_learning):
     
+    weight_1 = architecture ['weight_1']
+    bias_1 = architecture ['bias_1']
+    weight_2 = architecture['weight_2']
+    bias_2 = architecture['weight_2']
+    
+    form_weight_1 = gradients['form_weight_1']
+    form_bias_1 = gradients['form_bias_1']
+    form_weight_2 = gradients['form_bias_2']
+    form_bias_2 = gradients ['form_bias_2']
+    
+    
+    weight_1 = weight_1 - rate_of_learning *form_bias_1
+    bias_1 = bias_1 -rate_of_learning*form_weight_2
+    weight_2 = weight_2 - rate_of_learning*form_bias_2
+    bias_2 = bias_2 - rate_of_learning*form_bias_2
+    
+    architecture = {
+        "weight_1" = weight_1,
+        "bias_1" = bias_1,
+        "weight_2"=weight_2,
+        "bias_2" = bias_2
+        
+        }
+    return architecture
+
+
     
                  
     
