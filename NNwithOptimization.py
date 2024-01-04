@@ -7,6 +7,7 @@ Created on Thu Dec 28 18:25:45 2023
 
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 # Activation functions and their derivatives
 def sigmoid(x):
@@ -143,39 +144,44 @@ class NeuralNetwork:
         return np.squeeze(cost)
 
     def train(self, X_train, Y_train, epochs, optimizer="momentum"):
+        training_losses = []
+        test_accuracies = []
         for i in range(epochs):
             # Forward pass
             Y_hat, cache = self.forward_pass(X_train)
 
             # Compute cost
             cost = self.compute_cost(Y_train, Y_hat)
+            training_losses.append(cost)
 
             # Backward pass
             grads = self.backward_pass(X_train, Y_train, cache)
-
+            
             # Update parameters
             if optimizer == "sgd":
                 self.update_parameters_sgd(grads)
             elif optimizer == "momentum":
                 self.update_parameters_with_momentum(grads)
 
-
+            if i % 10 == 0 or i == epochs - 1:
+                test_accuracy = self.evaluate(X_test, y_test_one_hot)
+                test_accuracies.append(test_accuracy)
+                
             if i % 100 == 0:
                 print(f"Iteration {i}: Cost {cost}")
-
+            
+        return training_losses, test_accuracies
+        
     def predict(self, X):
         Y_hat, _ = self.forward_pass(X, training=False)
         #print(f"Shape of Y_hat before argmax: {Y_hat.shape}")  # Debugging line
         predictions = np.argmax(Y_hat, axis=0)
-        return predictions  # Ensure this is an array of predicted labels
+        return predictions
 
 
     def evaluate(self, X_test, Y_test):
-        predictions = self.predict(X_test)  # This already returns the argmax
+        predictions = self.predict(X_test)
         labels = np.argmax(Y_test, axis=0)
-        
-        # Debugging: Check if predictions and labels are arrays
-        #print(f"Shape of predictions: {predictions.shape}, Shape of labels: {labels.shape}")
         
         accuracy = np.mean(predictions == labels)
         return accuracy
@@ -192,21 +198,44 @@ num_classes = 10
 y_train_one_hot = np.eye(num_classes)[y_train].T
 y_test_one_hot = np.eye(num_classes)[y_test].T
 
-# Create and train the neural network
-nn = NeuralNetwork(layers=[784, 128, 10], 
-                   activation_funcs=["relu", "softmax"], 
-                   learning_rate=0.1, 
-                   dropout_keep_prob=0.5)
-
-#nn.train(X_train, y_train_one_hot, epochs=1000)
-
-# Train using standard SGD
-#nn.train(X_train, y_train_one_hot, epochs=1000, optimizer="sgd")
-
-# Train using SGD with momentum
-nn.train(X_train, y_train_one_hot, epochs=1000, optimizer="momentum")
-
+# Training using standard SGD
+nn_sgd = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["relu", "softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
+losses_sgd, accuracies_sgd = nn_sgd.train(X_train, y_train_one_hot, epochs=1000, optimizer="sgd")
 
 # Evaluate the network on the test set
-test_accuracy = nn.evaluate(X_test, y_test_one_hot)
-print(f"Test Accuracy: {test_accuracy * 100:.2f}%")
+accuracy_sgd = nn_sgd.evaluate(X_test, y_test_one_hot)
+print(f"Test Accuracy: {accuracy_sgd * 100:.2f}%")
+
+# Training using SGD with momentum
+nn_momentum = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["relu", "softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
+losses_momentum, accuracies_momentum = nn_momentum.train(X_train, y_train_one_hot, epochs=1000, optimizer="sgd")
+
+# Evaluate the network on the test set
+accuracy_momentum = nn_momentum.evaluate(X_test, y_test_one_hot)
+print(f"Test Accuracy: {accuracy_momentum * 100:.2f}%")
+
+epochs_loss = range(1, 1001)  # Assuming 1000 epochs for loss data
+epochs_accuracy = range(0, 1001, 10)  # For accuracy data recorded every 10 epochs
+
+plt.figure(figsize=(12, 5))
+
+# Plotting training loss for different optimizers
+plt.subplot(1, 2, 1)
+plt.plot(epochs_loss, losses_sgd, label='Standard SGD')
+plt.plot(epochs_loss, losses_momentum, label='SGD with Momentum')
+plt.title("Training Loss for Different Optimizers")
+plt.xlabel("Epochs")
+plt.ylabel("Loss")
+plt.legend()
+
+# Plotting test accuracy for different optimizers
+plt.subplot(1, 2, 2)
+plt.plot(epochs_accuracy, accuracies_sgd, label='Standard SGD')
+plt.plot(epochs_accuracy, accuracies_momentum, label='SGD with Momentum')
+plt.title("Test Accuracy for Different Optimizers")
+plt.xlabel("Epochs")
+plt.ylabel("Accuracy")
+plt.legend()
+
+plt.tight_layout()
+plt.show()
