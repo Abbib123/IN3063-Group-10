@@ -229,10 +229,22 @@ test_accuracy = nn.evaluate(X_test, y_test_one_hot)
 #accuracy_deeper = nn_deeper.evaluate(X_test, y_test_one_hot)
 
 # Example: Training a model with ReLU
+nn_relu = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["relu", "softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
+losses_relu, accuracies_relu = nn_relu.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
+accuracy_relu = nn_relu.evaluate(X_test, y_test_one_hot)
+print(f"Test Accuracy: {accuracy_relu * 100:.2f}%")
+
+# Example: Training a model with Sigmoid
+nn_sigmoid = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["sigmoid", "softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
+losses_sigmoid, accuracies_sigmoid = nn_sigmoid.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
+accuracy_sigmoid = nn_sigmoid.evaluate(X_test, y_test_one_hot)
+print(f"Test Accuracy: {accuracy_sigmoid * 100:.2f}%")
+
+# Example: Training a model with Tanh
 nn_tanh = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["tanh", "softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
 losses_tanh, accuracies_tanh = nn_tanh.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
-test_accuracy = nn_tanh.evaluate(X_test, y_test_one_hot)
-print(f"Test Accuracy: {test_accuracy * 100:.2f}%")
+accuracy_tanh = nn_tanh.evaluate(X_test, y_test_one_hot)
+print(f"Test Accuracy: {accuracy_tanh * 100:.2f}%")
 
 
 #for plotting grapghs for different architectures
@@ -267,8 +279,8 @@ plt.figure(figsize=(12, 5))
 
 # Plotting training loss for different activation functions
 plt.subplot(1, 2, 1)
-#plt.plot(epochs_loss, losses_relu, label='ReLU')
-#plt.plot(epochs_loss, losses_sigmoid, label='Sigmoid')
+plt.plot(epochs_loss, losses_relu, label='ReLU')
+plt.plot(epochs_loss, losses_sigmoid, label='Sigmoid')
 plt.plot(epochs_loss, losses_tanh, label='Tanh')
 plt.title("Training Loss for Different Activation Functions")
 plt.xlabel("Epochs")
@@ -277,8 +289,8 @@ plt.legend()
 
 # Plotting test accuracy for different activation functions
 plt.subplot(1, 2, 2)
-#plt.plot(epochs_accuracy, accuracies_relu, label='ReLU')
-#plt.plot(epochs_accuracy, accuracies_sigmoid, label='Sigmoid')
+plt.plot(epochs_accuracy, accuracies_relu, label='ReLU')
+plt.plot(epochs_accuracy, accuracies_sigmoid, label='Sigmoid')
 plt.plot(epochs_accuracy, accuracies_tanh, label='Tanh')
 plt.title("Test Accuracy for Different Activation Functions")
 plt.xlabel("Epochs")
