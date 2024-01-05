@@ -114,8 +114,36 @@ if 'Loss_During_Bottling_Kegging' in df.columns:
      print("Column 'Loss_During_Bottling_Kegging' successfully dropped.")
      print(f"Before drop: {df.columns}")
 else:
-     print("Column ''Loss_During_Bottling_Kegging' not found in the DataFrame.") 
+     print("Column Loss_During_Bottling_Kegging' not found in the DataFrame.") 
      
+
+if 'Location' in df.columns:
+     df = df.drop('Location', axis=1)
+     print(f"Before drop: {df.columns}")
+     print("Column 'Location' successfully dropped.")
+     print(f"Before drop: {df.columns}")
+else:
+     print("Column 'Location' not found in the DataFrame.")   
+     
+
+if 'SKU' in df.columns:
+     df = df.drop('SKU', axis=1)
+     print(f"Before drop: {df.columns}")
+     print("Column 'SKU' successfully dropped.")
+     print(f"Before drop: {df.columns}")
+else:
+     print("Column 'SKU' not found in the DataFrame.")     
+     
+if 'Gravity' in df.columns:
+     df = df.drop('Gravity', axis=1)
+     print(f"Before drop: {df.columns}")
+     print("Column 'Gravity' successfully dropped.")
+     print(f"Before drop: {df.columns}")
+else:
+     print("Column 'Gravity' not found in the DataFrame.")  
+     
+
+
 
      
      
