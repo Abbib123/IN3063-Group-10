@@ -14,7 +14,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from sklearn.preprocessing import LabelEncoder
 import os
-
 import matplotlib.pyplot as plt
 
 path = "."  
@@ -141,6 +140,27 @@ if 'Gravity' in df.columns:
      print(f"Before drop: {df.columns}")
 else:
      print("Column 'Gravity' not found in the DataFrame.")  
+     
+
+df = df.select_dtypes(include=['int', 'float'])
+
+headers = list(df.columns.values)
+fields = []
+
+for field in headers:
+    fields.append({
+        'name' : field,
+        'mean': df[field].mean(),
+        'var': df[field].var(),
+        'sdev': df[field].std()
+    })
+
+for field in fields:
+    print(field)
+
+
+
+
      
 
 
