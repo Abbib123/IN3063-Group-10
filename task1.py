@@ -71,8 +71,12 @@ class SoftmaxLayer:
     def backward_pass_softmax(self, x, targets):
         activation_output = (targets - self.softmax(x)) * self.softmax_derivative(x) 
         return activation_output
-        
+
 # Implement dropout
+# Bernd Klein (2022) Dropout Neural Networks in Python
+# Available at: https://python-course.eu/machine-learning/dropout-neural-networks-in-python.php
+# Accessed 2 January 2024
+
 class Dropout:
     def forward_pass_dropout(input_nodes, hidden_nodes, output_nodes, active_input_percentage, active_hidden_percentage):
         # weight matrix between input layer and hidden layer
