@@ -10,10 +10,12 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score, auc, roc_curve
+from sklearn.metrics import mean_squared_error
 
 # Task 2
 data = pd.read_csv("brewery_data_complete_extended.csv")
+data = data.drop(columns = ['Beer_Style', 'SKU', 'Location', 'Ingredient_Ratio', 'Batch_ID', 'Loss_During_Brewing',
+                     'Loss_During_Fermentation', 'Loss_During_Bottling_Kegging', 'Brew_Date'])
 
 # X
 columns = list({'Fermentation_Time', 'Temperature', 'pH_Level', 'Gravity', 'Alcohol_Content',
@@ -53,45 +55,54 @@ input_size = X_train.shape[1]
 hidden_size = 5
 output_size = 1
 
-num_of_epochs = 1
+num_of_epochs = 100
 learning_rate = 0.001
 L1_lambda = 0.0
-batch_size = 1
+batch_size = 100
 loss_across_epochs = []
 
 model = NeuralNetwork(input_size, hidden_size, output_size)
 optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=0.0)
 
 # Train model
+print("training model")
 for epoch in range(num_of_epochs):
     model.train()
     train_loss= 0.0
+    print("epoch ", epoch)
     
-    for i in range(0, X_train.shape[0], batch_size):     
+    for i in range(0, X_train.shape[0], batch_size):
+        print("batch size ", batch_size)
         
         input_data = X_train[i : min(X_train.shape[0], i + batch_size)]
         target = y_train[i : min(X_train.shape[0], i + batch_size)]
                 
         # clear existing gradients
+        print("clear gradient")
         optimizer.zero_grad()
         
         # forward pass
+        print("forward pass")
         output = model(input_data)
     
         # calculate loss with mean squared error for regression
+        print("calculate loss")
         loss_function = nn.MSELoss()
         loss = loss_function(output, target)
             
         # add l1 regularisation
+        print("add l1 regularisation")
         L1_loss = 0.0
         for param in model.parameters():
                 L1_loss += torch.sum(torch.abs(param))
         loss = loss + L1_lambda * L1_loss
 
         # backward pass
+        print("backward pass")
         loss.backward()
         
         # update weights
+        print("update weights")
         optimizer.step()
         train_loss += loss.item() * input_data.size(0)
         
@@ -105,11 +116,13 @@ y_test_pred = np.where(y_test_prob > 0.5, 1, 0)
 y_train_prob = model(X_train)
 y_train_pred = np.where(y_train_prob > 0.5, 1, 0)
 
-print("y_train accuracy score: ", round(accuracy_score(y_train, y_train_pred), 3))
-print("y_train precision score: ", round(precision_score(y_train, y_train_pred), 3))
-print("y_train score: ", round(recall_score(y_train, y_train_pred), 3))
-print("y_train roc auc score: ", round(roc_auc_score(y_train, y_train_prob.detach().numpy()), 3))
-print("y_test accuracy score: ", round(accuracy_score(y_test, y_test_pred), 3))
-print("y_test precision score: ", round(precision_score(y_test, y_test_pred), 3))
-print("y_test recall score: ", round(recall_score(y_test, y_test_pred), 3))
-print("y_test roc auc score: ", round(roc_auc_score(y_test, y_test_prob.detach().numpy()), 3))
+# using mean squared error because this is a regression problem
+print("y_train mean squared error: ", np.sqrt(mean_squared_error(y_train, y_train_pred)))
+print("y_test mean squared error: ", np.sqrt(mean_squared_error(y_test, y_test_pred)))
+
+# Loss Curve
+plt.plot(loss_across_epochs)
+plt.title('Loss across epochs')
+plt.ylabel('Loss')
+plt.xlabel('Epochs')
+plt.show()
