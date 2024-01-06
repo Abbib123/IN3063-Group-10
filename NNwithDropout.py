@@ -125,9 +125,14 @@ class NeuralNetwork:
                 dZL = np.multiply(dA, tanh_derivative(cache['Z' + str(l + 1)]))
             elif self.activation_funcs[l] == "leaky_relu":
                 dZL = np.multiply(dA, leaky_relu_derivative(cache['Z' + str(l + 1)]))
+            """
             grads["dW" + str(l + 1)] = np.dot(dZL, cache['A' + str(l)].T) / m
             grads["db" + str(l + 1)] = np.sum(dZL, axis=1, keepdims=True) / m
-        
+            """
+            # Adjust gradients for L1 regularization
+            dWL = np.dot(dZL, cache['A' + str(l)].T) / m + self.reg_lambda * np.sign(self.parameters[f'W{l+1}']) / m
+            grads[f"dW{l+1}"] = dWL
+            grads[f"db{l+1}"] = np.sum(dZL, axis=1, keepdims=True) / m
         return grads
 
     def update_parameters(self, grads):
@@ -139,8 +144,16 @@ class NeuralNetwork:
     def compute_cost(self, Y, Y_hat):
         m = Y.shape[1]
         L = len(self.parameters) // 2
+        """
         regularized_sum = sum([np.linalg.norm(self.parameters[f'W{i+1}'])**2 for i in range(L)])
         cost = (-np.sum(Y * np.log(Y_hat + 1e-15)) / m) + (self.reg_lambda / (2 * m)) * regularized_sum
+        return np.squeeze(cost)
+        """
+        # Compute L1 regularization
+        l1_regularization = sum([np.sum(np.abs(self.parameters[f'W{i+1}'])) for i in range(L)]) * (self.reg_lambda / (2 * m))
+
+        # Compute cost
+        cost = (-np.sum(Y * np.log(Y_hat + 1e-15)) / m) + l1_regularization
         return np.squeeze(cost)
 
     def train(self, X_train, Y_train, X_test, y_test_one_hot, epochs):
@@ -194,26 +207,31 @@ num_classes = 10
 y_train_one_hot = np.eye(num_classes)[y_train].T
 y_test_one_hot = np.eye(num_classes)[y_test].T
 
-
+"""
 #Dropout 0.5
 nn_dropout_05 = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["relu", "softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
 losses_dropout_05, accuracies_dropout_05 = nn_dropout_05.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
 accuracy = nn_dropout_05.evaluate(X_test, y_test_one_hot)
 print(f"0.5 dropout Test Accuracy: {accuracy * 100:.2f}%")
 
-
-
 #Dropout 0.8
 nn_dropout_08 = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["relu", "softmax"], learning_rate=0.1, dropout_keep_prob=0.8)
 losses_dropout_08, accuracies_dropout_08 = nn_dropout_08.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
 accuracy = nn_dropout_08.evaluate(X_test, y_test_one_hot)
 print(f"0.8 Test Accuracy: {accuracy * 100:.2f}%")
-
-
+"""
+# Example: Training a model with L2 regularization
 nn_l2 = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["relu", "softmax"], learning_rate=0.1, reg_lambda=0.01, dropout_keep_prob=1.0)
 losses_l2, accuracies_l2 = nn_l2.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
 accuracy = nn_l2.evaluate(X_test, y_test_one_hot)
 print(f"L2 Test Accuracy: {accuracy * 100:.2f}%")
+"""
+# Example: Training a model with L1 regularization
+nn_l1 = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["relu", "softmax"], learning_rate=0.1, reg_lambda=0.1, dropout_keep_prob=1.0)
+losses_l1, accuracies_l1 = nn_l1.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
+accuracy_l1 = nn_l1.evaluate(X_test, y_test_one_hot)
+print(f"L1 Regularization Test Accuracy: {accuracy_l1 * 100:.2f}%")
+"""
 
 epochs_loss = range(1, 1001)  # Assuming 1000 epochs
 epochs_accuracy = range(0, 1001, 10)
@@ -222,9 +240,10 @@ plt.figure(figsize=(12, 5))
 
 # Plotting training loss for different regularization techniques
 plt.subplot(1, 2, 1)
-plt.plot(epochs_loss, losses_dropout_05, label='Dropout 0.5')
-plt.plot(epochs_loss, losses_dropout_08, label='Dropout 0.8')
+#plt.plot(epochs_loss, losses_dropout_05, label='Dropout 0.5')
+#plt.plot(epochs_loss, losses_dropout_08, label='Dropout 0.8')
 plt.plot(epochs_loss, losses_l2, label='L2 Regularization')
+#plt.plot(epochs_loss, losses_l1, label='L1 Regularization')
 plt.title("Training Loss for Different Regularization Techniques")
 plt.xlabel("Epochs")
 plt.ylabel("Loss")
@@ -232,9 +251,10 @@ plt.legend()
 
 # Plotting test accuracy for different regularization techniques
 plt.subplot(1, 2, 2)
-plt.plot(epochs_accuracy, accuracies_dropout_05, label='Dropout 0.5')
-plt.plot(epochs_accuracy, accuracies_dropout_08, label='Dropout 0.8')
+#plt.plot(epochs_accuracy, accuracies_dropout_05, label='Dropout 0.5')
+#plt.plot(epochs_accuracy, accuracies_dropout_08, label='Dropout 0.8')
 plt.plot(epochs_accuracy, accuracies_l2, label='L2 Regularization')
+#plt.plot(epochs_accuracy, accuracies_l1, label='L1 Regularization')
 plt.title("Test Accuracy for Different Regularization Techniques")
 plt.xlabel("Epochs")
 plt.ylabel("Accuracy")

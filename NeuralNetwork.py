@@ -174,11 +174,11 @@ class NeuralNetwork:
     def predict(self, X):
         Y_hat, _ = self.forward_pass(X, training=False)
         predictions = np.argmax(Y_hat, axis=0)
-        return predictions  # Ensure this is an array of predicted labels
+        return predictions
 
 
     def evaluate(self, X_test, Y_test):
-        predictions = self.predict(X_test)  # This already returns the argmax
+        predictions = self.predict(X_test)
         labels = np.argmax(Y_test, axis=0)
         
         accuracy = np.mean(predictions == labels)
@@ -193,7 +193,7 @@ shallow_architecture = [784, 64, 10]
 deeper_architecture = [784, 128, 64, 10]
 
 # Even deeper or different configurations
-another_architecture = [784, 128, 64, 64, 10]
+another_architecture = [784, 128, 128, 64, 10]
 
 # Load and preprocess the MNIST dataset
 (X_train, y_train), (X_test, y_test) = tf.keras.datasets.mnist.load_data()
@@ -218,16 +218,25 @@ nn.train(X_train, y_train_one_hot, epochs=1000)
 test_accuracy = nn.evaluate(X_test, y_test_one_hot)
 """
 #Training with shallow architecture
-#nn_shallow = NeuralNetwork(layers=shallow_architecture, activation_funcs=["relu", "softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
-#losses_shallow, accuracies_shallow = nn_shallow.train(X_train, y_train_one_hot, epochs=1000)
-#accuracy_shallow = nn_shallow.evaluate(X_test, y_test_one_hot)
+nn_shallow = NeuralNetwork(layers=shallow_architecture, activation_funcs=["relu", "softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
+losses_shallow, accuracies_shallow = nn_shallow.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
+accuracy_shallow = nn_shallow.evaluate(X_test, y_test_one_hot)
+print(f"Test Accuracy: {accuracy_shallow * 100:.2f}%")
 
 
 #Training with deeper architecture
 #nn_deeper = NeuralNetwork(layers=deeper_architecture, activation_funcs=["relu", "relu", "softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
-#losses_deeper, accuracies_deeper = nn_deeper.train(X_train, y_train_one_hot, epochs=1000)
+#losses_deeper, accuracies_deeper = nn_deeper.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
 #accuracy_deeper = nn_deeper.evaluate(X_test, y_test_one_hot)
+#print(f"Test Accuracy: {accuracy_deeper * 100:.2f}%")
 
+#Training with another architecture
+#nn_another = NeuralNetwork(layers=another_architecture, activation_funcs=["relu"] * (len(another_architecture) - 1) + ["softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
+#losses_another, accuracies_another = nn_another.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
+#accuracy_another = nn_another.evaluate(X_test, y_test_one_hot)
+#print(f"Test Accuracy: {accuracy_another * 100:.2f}%")
+
+"""
 # Example: Training a model with ReLU
 nn_relu = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["relu", "softmax"], learning_rate=0.1, dropout_keep_prob=0.5)
 losses_relu, accuracies_relu = nn_relu.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
@@ -245,18 +254,19 @@ nn_tanh = NeuralNetwork(layers=[784, 128, 10], activation_funcs=["tanh", "softma
 losses_tanh, accuracies_tanh = nn_tanh.train(X_train, y_train_one_hot, X_test, y_test_one_hot, epochs=1000)
 accuracy_tanh = nn_tanh.evaluate(X_test, y_test_one_hot)
 print(f"Test Accuracy: {accuracy_tanh * 100:.2f}%")
-
+"""
 
 #for plotting grapghs for different architectures
 epochs_loss = range(1, 1001)  # For loss, which is recorded every epoch
 epochs_accuracy = range(0, 1001 , 10)  # For accuracy, recorded every 10 epochs
 
-"""
+
 # Plotting training loss for different architectures
 plt.figure(figsize=(12, 5))
 plt.subplot(1, 2, 1)
-#plt.plot(epochs_loss, losses_shallow, label='Shallow Network')
-plt.plot(epochs_loss, losses_deeper, label='Deeper Network')
+plt.plot(epochs_loss, losses_shallow, label='Shallow Network')
+#plt.plot(epochs_loss, losses_deeper, label='Deeper Network')
+#plt.plot(epochs_loss, losses_another, label='Another Network')
 plt.title("Training Loss for Different Architectures")
 plt.xlabel("Epochs")
 plt.ylabel("Loss")
@@ -264,8 +274,9 @@ plt.legend()
 
 # Plotting test accuracy for different architectures
 plt.subplot(1, 2, 2)
-#plt.plot(epochs_accuracy, accuracies_shallow, label='Shallow Network')
-plt.plot(epochs_accuracy, accuracies_deeper, label='Deeper Network')
+plt.plot(epochs_accuracy, accuracies_shallow, label='Shallow Network')
+#plt.plot(epochs_accuracy, accuracies_deeper, label='Deeper Network')
+#plt.plot(epochs_accuracy, accuracies_another, label='Another Network')
 plt.title("Test Accuracy for Different Architectures")
 plt.xlabel("Epochs")
 plt.ylabel("Accuracy")
@@ -299,3 +310,4 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
+"""
