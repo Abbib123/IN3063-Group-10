@@ -48,7 +48,12 @@ class sigmoid_layer:
     def derivative_sigmoid_formula(x):
         return x * (1-x)
     
-    
+    def forward_pass_sigmoid(self,input,bias,weight):
+        input_activation = np.dot(input,weight)
+        
+        
+        
+        
         
         
     
