@@ -159,7 +159,12 @@ for field in fields:
     print(field)
 
 
-
+# 1.Create a fully connected neural network 
+# 2.Check for a gpu within the cpu
+# 3.Load and preprocess the data(Already done)
+# 4.Turning our data into tensors and splitting them for training and testing
+# 5.Implementing data loaders
+# 6.
 
      
 

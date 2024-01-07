@@ -6,6 +6,7 @@ Created on Sat Dec 23 20:47:44 2023
 @author: abbibakram
 """
 import numpy as np
+import math
 import random
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -31,6 +32,39 @@ X_test /= 255
 # One-hot encode labels
 y_train = to_categorical(y_train, 8)#10
 y_test = to_categorical(y_test, 8)#10
+
+
+# This is the implementation of the Sigmoid activation layer.This will include the programmatic
+# This will include the programmatic representation of the mathematical sigmoid function,
+# The mathematical derivative of the sigmoid function
+# The forward propagation of the Sigmoid function
+# The backward propagation of the Sigmoid function
+
+class sigmoid_layer:
+    
+    def sigmoid_formula(x):
+        return 1 / (1+np.exp(-x))
+    
+    def derivative_sigmoid_formula(x):
+        return x * (1-x)
+    
+    
+        
+        
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
