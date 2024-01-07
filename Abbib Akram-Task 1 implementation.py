@@ -34,7 +34,7 @@ y_train = to_categorical(y_train, 8)#10
 y_test = to_categorical(y_test, 8)#10
 
 
-# This is the implementation of the Sigmoid activation layer.This will include the programmatic
+# This is the implementation of the Sigmoid activation layer.
 # This will include the programmatic representation of the mathematical sigmoid function,
 # The mathematical derivative of the sigmoid function
 # The forward propagation of the Sigmoid function
@@ -46,20 +46,22 @@ class sigmoid_layer:
         l = 1 / (1+np.exp(-x))
         return l
     
-    def derivative_sigmoid_formula(x):
-        h = x * (1-x)
-        return h
     
     def forward_pass_sigmoid(self,x,bias,weight):
         feeding_input_activation = np.dot(x,weight) + bias
         feeding_output_activation = self.sigmoid_formula(feeding_input_activation)
         return feeding_output_activation
+    
+    
+    def derivative_sigmoid_formula(x):
+        h = x * (1-x)
+        return h
         
     def backward_pass_sigmoid(self,x,bias,weight,aims):
         feeding_output_activation = (aims-self.sigmoid_formula(x)) *self.derivative_sigmoid_formula
         return feeding_output_activation
     
-# This is the implementation of the RELU activation layer.This will include the programmatic
+# This is the implementation of the RELU activation layer.
 # This will include the programmatic representation of the mathematical RELU function,
 # The mathematical derivative of the RELU function
 # The forward propagation of the RELU function
@@ -71,21 +73,68 @@ class ReLU_layer:
         g = np.maximum(0, x)
         return g
     
-    def derivative_ReLU_formula(x):
-        j = (x >= 0) * 1
-        return j
     
     def forward_pass_ReLU(self,x,bias,weight):
         feeding_input_activation = np.dot(x,weight) + bias
         feeding_output_activation = self.ReLU_formula(feeding_input_activation)
         return feeding_output_activation
+    
+    def derivative_ReLU_formula(x):
+        j = (x >= 0) * 1
+        return j
         
     
 def backward_pass_ReLU(self,x,bias,weight,aims):
          feeding_output_activation = (aims-self.ReLU_formula(x)) *self.derivative_sigmoid_formula
          return feeding_output_activation
         
-     
+   
+        
+   
+# This is the implementation of the Softmax activation layer.
+# This will include the programmatic representation of the mathematical Softmax function,
+# The mathematical derivative of the Softmax function
+# The forward propagation of the Softmx function
+# The backward propagation of the Softmax function  
+
+
+# Reference to: https://www.youtube.com/watch?v=AbLvJVwySEo
+
+class Softmax_layer:
+    
+    def Softmax_formula(vector):
+        a = np.exp(vector)
+        return a
+    
+    
+    def forward_pass_Softmax(self,x):
+        temp = np.exp(x)
+        self.output = temp / np.sum(temp)
+        return self.output
+    
+    
+    def derivative_Softmax_formula(self,x):
+        
+        a = self.Softmax_formula(x) * (1-self.Softmax_formula(x))
+        return a 
+    
+        
+    
+    def backward_pass_Softmax(self,gradients,rate_of_learning):
+        m = np.size(self.output)
+        temp = np.tile(self.output,m)
+        return np.dot(temp * (np.identity(m)- np.transpose(temp)),gradients)
+    
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
      
         
         
