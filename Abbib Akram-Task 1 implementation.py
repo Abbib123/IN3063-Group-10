@@ -43,13 +43,53 @@ y_test = to_categorical(y_test, 8)#10
 class sigmoid_layer:
     
     def sigmoid_formula(x):
-        return 1 / (1+np.exp(-x))
+        l = 1 / (1+np.exp(-x))
+        return l
     
     def derivative_sigmoid_formula(x):
-        return x * (1-x)
+        h = x * (1-x)
+        return h
     
-    def forward_pass_sigmoid(self,input,bias,weight):
-        input_activation = np.dot(input,weight)
+    def forward_pass_sigmoid(self,x,bias,weight):
+        feeding_input_activation = np.dot(x,weight) + bias
+        feeding_output_activation = self.sigmoid_formula(feeding_input_activation)
+        return feeding_output_activation
+        
+    def backward_pass_sigmoid(self,x,bias,weight,aims):
+        feeding_output_activation = (aims-self.sigmoid_formula(x)) *self.derivative_sigmoid_formula
+        return feeding_output_activation
+    
+# This is the implementation of the RELU activation layer.This will include the programmatic
+# This will include the programmatic representation of the mathematical RELU function,
+# The mathematical derivative of the RELU function
+# The forward propagation of the RELU function
+# The backward propagation of the RELU function    
+    
+class ReLU_layer:
+    
+    def ReLU_formula(x):
+        g = np.maximum(0, x)
+        return g
+    
+    def derivative_ReLU_formula(x):
+        j = (x >= 0) * 1
+        return j
+    
+    def forward_pass_ReLU(self,x,bias,weight):
+        feeding_input_activation = np.dot(x,weight) + bias
+        feeding_output_activation = self.ReLU_formula(feeding_input_activation)
+        return feeding_output_activation
+        
+    
+def backward_pass_ReLU(self,x,bias,weight,aims):
+         feeding_output_activation = (aims-self.ReLU_formula(x)) *self.derivative_sigmoid_formula
+         return feeding_output_activation
+        
+     
+     
+        
+        
+      
         
         
         
