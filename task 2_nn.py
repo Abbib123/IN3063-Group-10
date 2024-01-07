@@ -29,119 +29,67 @@ df = pd.read_csv(filename_read, na_values=['NA', '?'])
 
 if 'Brew_Date' in df.columns:
     df = df.drop('Brew_Date', axis=1)
-    print(f"Before drop: {df.columns}")
-    print("Column 'Brew_Date' successfully dropped.")
-    print(f"After drop: {df.columns}")
-else:
-    print("Column 'Brew_Date' not found in the DataFrame.")
     
  
 if 'Batch_ID' in df.columns:
     df = df.drop('Batch_ID', axis=1)
-    print(f"Before drop: {df.columns}")
-    print("Column 'Batch_ID' successfully dropped.")
-    print(f"Before drop: {df.columns}")
-else:
-    print("Column 'Batch_ID' not found in the DataFrame.")
+    p
     
     
 if 'Bitterness' in df.columns:
     df = df.drop('Bitterness', axis=1)
-    print(f"Before drop: {df.columns}")
-    print("Column 'Bitterness' successfully dropped.")
-    print(f"Before drop: {df.columns}")
-else:
-    print("Column 'Bitterness' not found in the DataFrame.")
+    
     
     
 if 'pH_Level' in df.columns:
-    df = df.drop('pH_Level', axis=1)
-    print(f"Before drop: {df.columns}")
-    print("Column 'pH_Level' successfully dropped.")
-    print(f"Before drop: {df.columns}")
-else:
-    print("Column 'pH_Level' not found in the DataFrame.")
+    
     
     
 if 'Loss_During_Fermentation' in df.columns:
-     df = df.drop('Loss_During_Fermentation', axis=1)
-     print(f"Before drop: {df.columns}")
-     print("Column 'Loss_During_Fermentation' successfully dropped.")
-     print(f"Before drop: {df.columns}")
-else:
-     print("Column 'Loss_During_Fermentation' not found in the DataFrame.")  
+    df = df.drop('Loss_During_Fermentation', axis=1)
+    
+     
+      
      
 
 if 'Alcohol_Content' in df.columns:
      df = df.drop('Alcohol_Content', axis=1)
-     print(f"Before drop: {df.columns}")
-     print("Column 'Alcohol_Content' successfully dropped.")
-     print(f"Before drop: {df.columns}")
-else:
-     print("Column 'Alcohol_Content' not found in the DataFrame.")
+     
      
 
 if 'Color' in df.columns:
      df = df.drop('Color', axis=1)
-     print(f"Before drop: {df.columns}")
-     print("Column 'Color' successfully dropped.")
-     print(f"Before drop: {df.columns}")
-else:
-     print("Column Color' not found in the DataFrame.")     
+        
      
 
 if 'Ingredient_Ratio' in df.columns:
      df = df.drop('Ingredient_Ratio', axis=1)
-     print(f"Before drop: {df.columns}")
-     print("Column 'Ingredient_Ratio' successfully dropped.")
-     print(f"Before drop: {df.columns}")
-else:
-     print("Column 'Ingredient_Ratio' not found in the DataFrame.")  
+     
      
      
 if 'Loss_During_Brewing' in df.columns:
      df = df.drop('Loss_During_Brewing', axis=1)
-     print(f"Before drop: {df.columns}")
-     print("Column 'Loss_During_Brewing' successfully dropped.")
-     print(f"Before drop: {df.columns}")
-else:
-     print("Column 'Loss_During_Brewing' not found in the DataFrame.") 
+     
      
 if 'Loss_During_Bottling_Kegging' in df.columns:
      df = df.drop('Loss_During_Bottling_Kegging', axis=1)
-     print(f"Before drop: {df.columns}")
-     print("Column 'Loss_During_Bottling_Kegging' successfully dropped.")
-     print(f"Before drop: {df.columns}")
-else:
-     print("Column Loss_During_Bottling_Kegging' not found in the DataFrame.") 
+
      
 
 if 'Location' in df.columns:
      df = df.drop('Location', axis=1)
-     print(f"Before drop: {df.columns}")
-     print("Column 'Location' successfully dropped.")
-     print(f"Before drop: {df.columns}")
-else:
-     print("Column 'Location' not found in the DataFrame.")   
+  
      
 
 if 'SKU' in df.columns:
      df = df.drop('SKU', axis=1)
-     print(f"Before drop: {df.columns}")
-     print("Column 'SKU' successfully dropped.")
-     print(f"Before drop: {df.columns}")
-else:
-     print("Column 'SKU' not found in the DataFrame.")     
+        
      
 if 'Gravity' in df.columns:
      df = df.drop('Gravity', axis=1)
-     print(f"Before drop: {df.columns}")
-     print("Column 'Gravity' successfully dropped.")
-     print(f"Before drop: {df.columns}")
-else:
-     print("Column 'Gravity' not found in the DataFrame.")  
      
-
+     
+#Reference to IN3062 Introduction to AI Tutorial 2,Howe,Jacob,Date accessed:06.07.2024
 df = df.select_dtypes(include=['int', 'float'])
 
 headers = list(df.columns.values)
@@ -159,12 +107,36 @@ for field in fields:
     print(field)
 
 
+
 # 1.Create a fully connected neural network 
 # 2.Check for a gpu within the cpu
 # 3.Load and preprocess the data(Already done)
 # 4.Turning our data into tensors and splitting them for training and testing
 # 5.Implementing data loaders
 # 6.
+
+
+#Persson, A. (2021). Pytorch Neural Network Tutorial. [online] Medium. Available at: https://aladdinpersson.medium.com/pytorch-neural-network-tutorial-7e871d6be7c4 [Accessed 5 Jan. 2024].
+‌
+
+training_loader = Dataloader (dataset=training_dataset, size_of_batch=size_of_batch, shuffle=True)
+
+
+testing_loader = DataLoader(
+    dataset=testing_dataset, size_of_batch=size_of_batch, shuffle=True
+)
+
+
+class Neural_network_cnn_py(nn.Module):
+    def __init__(self, input, classes):
+        super(Neural_network_cnn_py, self).__init__()
+        self.fc3 = nn.Linear(input_size, 1000)
+        self.fc4 = nn.Linear(1000, classes)
+
+    def forward(self, input):
+        input = F.relu(self.fc3(input))
+        input = self.fc4(input)
+        return input
 
      
 

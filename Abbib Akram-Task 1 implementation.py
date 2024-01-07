@@ -16,8 +16,11 @@ from keras.datsets import mnist
 #from tensorflow import keras
 #from keras.datsets import mnist
 
-# Reference to:https://www.scaler.com/topics/deep-learning/how-to-build-a-neural-network/
-# Reference to:https://www.analyticsvidhya.com/blog/2021/06/mnist-dataset-prediction-using-keras/#h-step1-importing-dataset
+
+
+# Malingan, N. (2023). Building a Neural Network from Scratch. [online] Scaler Topics. Available at: https://www.scaler.com/topics/deep-learning/how-to-build-a-neural-network/ [Accessed 1 Jan. 2024].
+# J, S. (2021). MNIST Dataset Prediction Using Keras [5 Simple Steps]. [online] Analytics Vidhya. Available at: https://www.analyticsvidhya.com/blog/2021/06/mnist-dataset-prediction-using-keras/#h-step1-importing-dataset [Accessed 1 Jan. 2024].
+‌
 
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
@@ -98,7 +101,8 @@ def backward_pass_ReLU(self,x,bias,weight,aims):
 # The backward propagation of the Softmax function  
 
 
-# Reference to: https://www.youtube.com/watch?v=AbLvJVwySEo
+# www.youtube.com. (n.d.). Softmax Layer from Scratch | Mathematics & Python Code. [online] Available at: https://www.youtube.com/watch?v=AbLvJVwySEo [Accessed 5 Jan. 2024].
+‌
 
 class Softmax_layer:
     
@@ -128,7 +132,46 @@ class Softmax_layer:
     
         
         
+class dropout(input,architecture,keep_rate):
+    
+    def forward_propagation_dropout:
+        weight_1 = architecture ["weight_1"]
+        bias_1 = architecture ["bias_1"]
+        weight_2 = architecture ["weight_2"]
         
+        form_weight_1 = np.dot(weight_1,input)+bias_1
+        form_bias_1 = ReLU_layer(form_com2)
+        
+        form_com1 = np.random.rand(form_weight_1.shape[0],form_weight_1.shape[1])
+        form_com1 = form_com1 < keep_rate
+        form_weight_1 = form_weight_1 * form_bias_1
+        form_weight_1 = form_weight_1 / keep_rate
+        
+        form_bias_2 = np.dot(form_weight_2,form_com1)+form_bias_1
+        form_weight_2 = ReLU_layer(form_bias_2)
+        
+        form_bias_2 = np.random.rand (form_weight_2.shape[0],form_weight_2.shape[1])
+        form_bias_2 = form_bias_2 < keep_rate
+        form_weight_2 = form_weight_2 * form_bias_2
+        form_weight_2 = form_weight_2 / keep_rate
+        
+        return forwardprop_value_storage
+    
+    def backpropagation_dropout(input,output,forwardprop_value_storage):
+        m = input.shape[1]
+        #forwardprop_value_storage = 
+        
+        
+        
+        
+        
+                            
+        
+        
+    
+    
+    
+      
         
         
         
@@ -163,7 +206,7 @@ class Softmax_layer:
 
 
 #Code for creating and training the neural network
-#Reference to:https://www.youtube.com/watch?v=vtx1iwmOx10
+#www.youtube.com. (n.d.). Neural Network python from scratch | MultiClass Classification with Softmax. [online] Available at: https://www.youtube.com/watch?v=vtx1iwmOx10 [Accessed 5 Jan. 2024].
 
 class neural_network_mnist:
     def __init__(self,
