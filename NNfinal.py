@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-# Activation functions and their derivatives
+# Define activation functions and their derivatives for use in the neural network.
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
@@ -24,21 +24,7 @@ def softmax_derivative(Y, softmax_output):
     dZ = softmax_output - Y
     return dZ
 
-def tanh(x):
-    return np.tanh(x)
-
-def tanh_derivative(x):
-    return 1 - np.tanh(x)*2
-
-def leaky_relu(x, alpha=0.01):
-    return np.where(x > 0, x, alpha * x)
-
-def leaky_relu_derivative(x, alpha=0.01):
-    dx = np.ones_like(x)
-    dx[x < 0] = alpha
-    return dx
-
-# Neural Network Class
+# Define the Neural Network class with configurable layers, activation functions, learning rate, regularization, and dropout.
 class NeuralNetwork:
     def __init__(self, layers, activation_funcs, learning_rate=0.01, reg_lambda=0, dropout_keep_prob=1.0):
         self.layers = layers
@@ -48,13 +34,16 @@ class NeuralNetwork:
         self.dropout_keep_prob = dropout_keep_prob
         self.parameters = self.initialize_parameters()
 
+    # Initialize parameters (weights and biases) for each layer in the network.
     def initialize_parameters(self):
         parameters = {}
         for l in range(1, len(self.layers)):
             parameters['W' + str(l)] = np.random.randn(self.layers[l], self.layers[l-1]) * 0.01
             parameters['b' + str(l)] = np.zeros((self.layers[l], 1))
         return parameters
-
+    
+    
+    # Forward propagation through the network, applying activation functions and dropout if applicable.
     def forward_pass(self, X, training=True):
         cache = {'A0': X}  # Storing input layer activation
         A = X
@@ -64,26 +53,23 @@ class NeuralNetwork:
             A_prev = A 
             Z = np.dot(self.parameters['W' + str(l)], A_prev) + self.parameters['b' + str(l)]
             
+            # Apply the appropriate activation function for each layer.
             if self.activation_funcs[l-1] == "relu":
                 A = relu(Z)
             elif self.activation_funcs[l-1] == "sigmoid":
                 A = sigmoid(Z)
-            elif self.activation_funcs[l-1] == "tanh":
-                A = tanh(Z)
-            elif self.activation_funcs[l-1] == "leaky_relu":
-                A = leaky_relu(Z)
         
             cache['Z' + str(l)] = Z
             cache['A' + str(l)] = A  # Store the activation for this layer
 
-            # Dropout (if applicable)
+            # Apply dropout to each layer's activation (if training and dropout is enabled).
             if training and self.dropout_keep_prob < 1.0:
                 D = np.random.rand(A.shape[0], A.shape[1]) < self.dropout_keep_prob
                 A = np.multiply(A, D)
                 A /= self.dropout_keep_prob
                 cache['D' + str(l)] = D
 
-        # Output layer
+        # Output layer with softmax activation.
         ZL = np.dot(self.parameters['W' + str(L)], A) + self.parameters['b' + str(L)]
         AL = softmax(ZL)
         cache['Z' + str(L)] = ZL
@@ -92,7 +78,7 @@ class NeuralNetwork:
         
         return AL, cache
 
-
+    # Backward propagation through the network to compute gradients for learning.
     def backward_pass(self, X, Y, cache):
         grads = {}
         L = len(self.parameters) // 2  # number of layers
@@ -100,11 +86,12 @@ class NeuralNetwork:
         Y = Y.reshape(cache['A' + str(L)].shape)
         #print(f"Backward Pass: Cache Keys: {list(cache.keys())}")
 
-        # Initializing the backpropagation
+        # Initialize backpropagation with the output layer gradient.
         dZL = softmax_derivative(Y, cache['A' + str(L)])
         grads["dW" + str(L)] = np.dot(dZL, cache['A' + str(L-1)].T) / m
         grads["db" + str(L)] = np.sum(dZL, axis=1, keepdims=True) / m
 
+        # Backpropagate through the hidden layers.
         for l in reversed(range(L-1)):
             dA = np.dot(self.parameters['W' + str(l + 2)].T, dZL)
             if 'D' + str(l + 1) in cache:
@@ -114,47 +101,48 @@ class NeuralNetwork:
                 dZL = np.multiply(dA, relu_derivative(cache['Z' + str(l + 1)]))
             elif self.activation_funcs[l] == "sigmoid":
                 dZL = np.multiply(dA, sigmoid_derivative(cache['Z' + str(l + 1)]))
-            elif self.activation_funcs[l] == "tanh":
-                dZL = np.multiply(dA, tanh_derivative(cache['Z' + str(l + 1)]))
-            elif self.activation_funcs[l] == "leaky_relu":
-                dZL = np.multiply(dA, leaky_relu_derivative(cache['Z' + str(l + 1)]))
+            
             grads["dW" + str(l + 1)] = np.dot(dZL, cache['A' + str(l)].T) / m
             grads["db" + str(l + 1)] = np.sum(dZL, axis=1, keepdims=True) / m
         
         return grads
-
+    
+    # Update network parameters using the computed gradients.
     def update_parameters(self, grads):
         L = len(self.parameters) // 2  # number of layers
         for l in range(L):
             self.parameters["W" + str(l+1)] -= self.learning_rate * grads["dW" + str(l+1)]
             self.parameters["b" + str(l+1)] -= self.learning_rate * grads["db" + str(l+1)]
-
+            
+    # Compute the cost (loss) of the network's predictions.
     def compute_cost(self, Y, Y_hat):
         m = Y.shape[1]
         L = len(self.parameters) // 2
+        # Regularization component of the cost.
         regularized_sum = sum([np.linalg.norm(self.parameters[f'W{i+1}'])**2 for i in range(L)])
         cost = (-np.sum(Y * np.log(Y_hat + 1e-15)) / m) + (self.reg_lambda / (2 * m)) * regularized_sum
         return np.squeeze(cost)
 
+    # Train the neural network on the provided dataset.
     def train(self, X_train, Y_train, X_test, y_test_one_hot, epochs, optimizer="momentum"):
         training_losses = []
         test_accuracies = []
         for i in range(epochs):
-            # Forward pass
+            # Forward pass through the network.
             Y_hat, cache = self.forward_pass(X_train)
 
-            # Compute cost
+            # Compute and record the cost.
             cost = self.compute_cost(Y_train, Y_hat)
             training_losses.append(cost)
             
-            # Backward pass
+            # Perform backward pass to compute gradients.
             grads = self.backward_pass(X_train, Y_train, cache)
 
-            # Update parameters
+            # Update network parameters based on gradients.
             if optimizer == "sgd":
                 self.update_parameters(grads)
 
-            # Evaluate test accuracy
+            # Periodically evaluate and record the test accuracy.
             if i % 10 == 0 or i == epochs - 1:  # Also record at the last epoch
                 test_accuracy = self.evaluate(X_test, y_test_one_hot)
                 test_accuracies.append(test_accuracy)
@@ -165,12 +153,13 @@ class NeuralNetwork:
         print(f"Length of test accuracies: {len(test_accuracies)}")
         return training_losses, test_accuracies
     
+    # Predict the output for given inputs.
     def predict(self, X):
         Y_hat, _ = self.forward_pass(X, training=False)
         predictions = np.argmax(Y_hat, axis=0)
         return predictions
 
-
+    # Evaluate the model's accuracy on a test set.
     def evaluate(self, X_test, Y_test):
         predictions = self.predict(X_test)
         labels = np.argmax(Y_test, axis=0)
@@ -180,13 +169,9 @@ class NeuralNetwork:
 
 
 
-# Shallow network (e.g., one hidden layer)
+# Define network architectures for training and testing.
 shallow_architecture = [784, 64, 10]
-
-# Deeper network (e.g., two hidden layers)
 deeper_architecture = [784, 128, 64, 10]
-
-# Even deeper or different configurations
 another_architecture = [784, 128, 128, 64, 10]
 
 # Load and preprocess the MNIST dataset
